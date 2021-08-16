@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stencyl-addons>
+
+	<property-page-addon target="dashboard.sidebar">
+		<header label="Android"/>
+		<field name="oauth2ClientID" label="OAuth 2.0 Client ID" />
+	</property-page-addon>
+
+</stencyl-addons>

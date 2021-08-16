@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<section if="android">
+		<source path="src" />
+		<dependency name="fitness" path="dependencies/fitness" />
+		<android extension="com.stencyl.fitness.AndroidFitness" />
+	</section>
+	
+</project>
