@@ -272,8 +272,8 @@ public class AndroidFitness extends Extension
                         Log.i(TAG, String.format("Data source found: %s", dataSource.toString()));
                         Log.i(TAG, String.format("Data source type: %s", dataSource.getDataType().getName()));
                         // Let's register a listener to receive Activity data!
-                        if (dataSource.getDataType() == DataType.TYPE_STEP_COUNT_CUMULATIVE && dataPointListener == null) {
-                            Log.i(TAG, "Data source for LOCATION_SAMPLE found!  Registering.");
+                        if (dataSource.getDataType().equals(DataType.TYPE_STEP_COUNT_CUMULATIVE) && dataPointListener == null) {
+                            Log.i(TAG, "Data source for STEP_COUNT_CUMULATIVE found!  Registering.");
                             registerFitnessDataListener(dataSource, DataType.TYPE_STEP_COUNT_CUMULATIVE);
                         }
                     }
