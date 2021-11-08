@@ -83,7 +83,7 @@ public class AndroidFitness extends Extension
     @SuppressWarnings("unused")
     public static void updateSteps() {
         //Log.i(TAG, "Try to read");
-        //instance.checkPermissionsAndRun(FitActionRequestCode.READ_DATA);
+        instance.checkPermissionsAndRun(FitActionRequestCode.READ_DATA);
     }
 
     @SuppressWarnings("unused")
@@ -137,7 +137,7 @@ public class AndroidFitness extends Extension
 
     private FitnessOptions fitnessOptions = FitnessOptions.builder()
             .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE)
-            .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
+            .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
             .addDataType(DataType.TYPE_LOCATION_SAMPLE)
             .build();
 
@@ -251,6 +251,7 @@ public class AndroidFitness extends Extension
                     stepCount = 0;
                     if(!dataSet.isEmpty())
                         stepCount = dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
+                    haxeCallback("historyUpdated", new Object[] {stepCount});
                     Log.i(TAG, "Total steps: " + stepCount);
                 })
                 .addOnFailureListener(e -> {
@@ -264,17 +265,17 @@ public class AndroidFitness extends Extension
         Fitness.getSensorsClient(mainActivity, getGoogleAccount())
                 .findDataSources(
                         new DataSourcesRequest.Builder()
-                                .setDataTypes(DataType.TYPE_STEP_COUNT_CUMULATIVE)
-                                .setDataSourceTypes(DataSource.TYPE_RAW)
+                                .setDataTypes(DataType.TYPE_STEP_COUNT_DELTA)
+                                //.setDataSourceTypes(DataSource.TYPE_RAW)
                                 .build())
                 .addOnSuccessListener((dataSources) -> {
                     for (DataSource dataSource : dataSources) {
                         Log.i(TAG, String.format("Data source found: %s", dataSource.toString()));
                         Log.i(TAG, String.format("Data source type: %s", dataSource.getDataType().getName()));
                         // Let's register a listener to receive Activity data!
-                        if (dataSource.getDataType().equals(DataType.TYPE_STEP_COUNT_CUMULATIVE) && dataPointListener == null) {
+                        if (dataSource.getDataType().equals(DataType.TYPE_STEP_COUNT_DELTA) && dataPointListener == null) {
                             Log.i(TAG, "Data source for STEP_COUNT_CUMULATIVE found!  Registering.");
-                            registerFitnessDataListener(dataSource, DataType.TYPE_STEP_COUNT_CUMULATIVE);
+                            registerFitnessDataListener(dataSource, DataType.TYPE_STEP_COUNT_DELTA);
                         }
                     }
                 })
@@ -287,7 +288,10 @@ public class AndroidFitness extends Extension
                 Value value = dataPoint.getValue(field);
                 Log.i(TAG, String.format("Detected DataPoint field: %s", field.getName()));
                 Log.i(TAG, String.format("Detected DataPoint value: %s", value.toString()));
-
+                if(field.getName().equals("steps"))
+                {
+                    haxeCallback("deltaUpdated", new Object[] {value.asInt()});
+                }
             }
         };
         Fitness.getSensorsClient(mainActivity, getGoogleAccount())

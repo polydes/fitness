@@ -24,6 +24,7 @@ import haxe.Json;
 #end
 class Fitness
 {
+
     //lastDayChecked
     //stepCountOnLastDayChecked
 
@@ -39,6 +40,13 @@ class Fitness
 
     //get steps taken since last check
 
+    //set step sensor rate in seconds
+
+    //read historical step count --> added to steps
+
+    public static var historyStepCount:Int;
+    public static var stepDeltaAccumulator:Int;
+
     #if android
     //Used for Android callbacks from Java
     public function new()
@@ -48,9 +56,10 @@ class Fitness
 
     #if android
     static var jniFunctionMap:Map<String, Dynamic> = new Map<String, Dynamic>();
+    private static var noArgs = [];
     #end
 
-    public static function call(functionName:String):Void
+    public static function call(functionName:String, ?type:String = "()V", ?args:Array<Dynamic> = null):Void
     {
         #if ios
         
@@ -60,11 +69,29 @@ class Fitness
         var jniFunction = jniFunctionMap.get(functionName);
         if(jniFunction == null)
         {
-            jniFunction = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", functionName, "()V", true);
+            jniFunction = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", functionName, type, true);
+            jniFunctionMap.set(functionName, jniFunction);
+        }
+
+        jniFunction(args == null ? args : noArgs);
+        #end
+    }
+
+    public static function get(functionName:String, type:String, ?args:Array<Dynamic> = null):Dynamic
+    {
+        #if ios
+        
+        #end
+        
+        #if android
+        var jniFunction = jniFunctionMap.get(functionName);
+        if(jniFunction == null)
+        {
+            jniFunction = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", functionName, type, true);
             jniFunctionMap.set(functionName, jniFunction);
         }
         
-        jniFunction();
+        return jniFunction(args == null ? args : noArgs);
         #end
     }
 
@@ -86,118 +113,26 @@ class Fitness
         #end
     }
 
-    public static function requestPermissions():Void
-    {
-        #if ios
-        
-        #end
-        
-        #if android
-        if(funcRequestPermissions == null)
-        {
-            funcRequestPermissions = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "requestPermissions", "()V", true);
-        }
-        
-        funcRequestPermissions([]);
-        #end
-    }
-
-    public static function rescindPermissions():Void
-    {
-        #if ios
-        
-        #end
-        
-        #if android
-        if(funcRescindPermissions == null)
-        {
-            funcRescindPermissions = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "rescindPermissions", "()V", true);
-        }
-        
-        funcRescindPermissions([]);
-        #end
-    }
-
-    public static function allPermissionsApproved():Bool
-    {
-        #if ios
-        
-        #end
-        
-        #if android
-        if(funcAllPermissionsApproved == null)
-        {
-            funcAllPermissionsApproved = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "allPermissionsApproved", "()Z", true);
-        }
-        
-        return funcAllPermissionsApproved([]);
-        #end
-    }
-    
-    public static function getSteps():Int
-    {
-        #if ios
-        
-        #end
-        
-        #if android
-        if(funcGetSteps == null)
-        {
-            funcGetSteps = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "getSteps", "()I", true);
-        }
-        
-        return funcGetSteps([]);
-        #end
-    }
-
-    public static function recordSteps():Void
-    {
-        #if ios
-        
-        #end
-        
-        #if android
-        if(funcRecordSteps == null)
-        {
-            funcRecordSteps = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "recordSteps", "()V", true);
-        }
-        
-        funcRecordSteps([]);
-        #end
-    }
-
-    public static function updateSteps():Void
-    {
-        #if ios
-        
-        #end
-        
-        #if android
-        if(funcUpdateSteps == null)
-        {
-            funcUpdateSteps = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "updateSteps", "()V", true);
-        }
-        
-        funcUpdateSteps([]);
-        #end
-    }
-
     ///Android Callbacks
     #if android
     public function onTrace(tag:String, msg:String)
     {
         trace(tag + ": " + msg);
     }
+
+    public function historyUpdated(steps:Int)
+    {
+        historyStepCount = steps;
+    }
+
+    public function deltaUpdated(steps:Int)
+    {
+        stepDeltaAccumulator += steps;
+    }
     #end
 
     #if android 
     private static var funcInit:Dynamic;
-    private static var funcRequestPermissions:Dynamic;
-    private static var funcRescindPermissions:Dynamic;
-    private static var funcGetSteps:Dynamic;
-    private static var funcRecordSteps:Dynamic;
-    private static var funcUpdateSteps:Dynamic;
-    private static var funcAllPermissionsApproved:Dynamic;
     #end
 
     #if ios
