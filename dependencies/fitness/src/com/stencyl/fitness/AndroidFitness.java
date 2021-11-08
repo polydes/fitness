@@ -5,20 +5,30 @@ import static android.app.Activity.RESULT_OK;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
+
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessOptions;
+import com.google.android.gms.fitness.data.DataPoint;
+import com.google.android.gms.fitness.data.DataSource;
 import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
+import com.google.android.gms.fitness.data.Value;
+import com.google.android.gms.fitness.request.DataSourcesRequest;
+import com.google.android.gms.fitness.request.OnDataPointListener;
+import com.google.android.gms.fitness.request.SensorRequest;
 
 import org.haxe.extension.Extension;
 import org.haxe.lime.HaxeObject;
+
+import java.util.concurrent.TimeUnit;
 
 public class AndroidFitness extends Extension
 {
@@ -28,17 +38,24 @@ public class AndroidFitness extends Extension
     {
         SUBSCRIBE,
         READ_DATA,
+        FIND_DATA_SOURCES,
         DO_NOTHING
     }
 
     private static AndroidFitness instance;
-    private static HaxeObject callback = null;
+    public static HaxeObject callback = null;
+
+
+    // Need to hold a reference to this listener, as it's passed into the "unregister"
+    // method in order to stop all sensors from sending data to this listener.
+    private OnDataPointListener dataPointListener = null;
 
     private int stepCount = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initializeLogging();
         instance = this;
     }
 
@@ -65,8 +82,14 @@ public class AndroidFitness extends Extension
 
     @SuppressWarnings("unused")
     public static void updateSteps() {
-        Log.i(TAG, "Try to read");
-        instance.checkPermissionsAndRun(FitActionRequestCode.READ_DATA);
+        //Log.i(TAG, "Try to read");
+        //instance.checkPermissionsAndRun(FitActionRequestCode.READ_DATA);
+    }
+
+    @SuppressWarnings("unused")
+    public static void findDataSources() {
+        Log.i(TAG, "Try to find data sources");
+        instance.checkPermissionsAndRun(FitActionRequestCode.FIND_DATA_SOURCES);
     }
 
     @SuppressWarnings("unused")
@@ -106,7 +129,7 @@ public class AndroidFitness extends Extension
         haxeCallback("onCallbackName", new Object[] { "Callback Return Value" });
     }
 
-    private static void haxeCallback(String function, Object[] args) {
+    static void haxeCallback(String function, Object[] args) {
         Extension.callbackHandler.post (() -> AndroidFitness.callback.call (function, args));
     }
 
@@ -115,6 +138,7 @@ public class AndroidFitness extends Extension
     private FitnessOptions fitnessOptions = FitnessOptions.builder()
             .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE)
             .addDataType(DataType.TYPE_STEP_COUNT_DELTA)
+            .addDataType(DataType.TYPE_LOCATION_SAMPLE)
             .build();
 
     /**
@@ -168,6 +192,8 @@ public class AndroidFitness extends Extension
                 readData(); break;
             case SUBSCRIBE:
                 subscribe(); break;
+            case FIND_DATA_SOURCES:
+                fitnessFindDataSources(); break;
         }
     }
 
@@ -229,6 +255,77 @@ public class AndroidFitness extends Extension
                 })
                 .addOnFailureListener(e -> {
                     Log.w(TAG, "There was a problem getting the step count.", e);
+                });
+    }
+
+    private void fitnessFindDataSources()
+    {
+        // Note: Fitness.SensorsApi.findDataSources() requires the ACCESS_FINE_LOCATION permission.
+        Fitness.getSensorsClient(mainActivity, getGoogleAccount())
+                .findDataSources(
+                        new DataSourcesRequest.Builder()
+                                .setDataTypes(DataType.TYPE_STEP_COUNT_CUMULATIVE)
+                                .setDataSourceTypes(DataSource.TYPE_RAW)
+                                .build())
+                .addOnSuccessListener((dataSources) -> {
+                    for (DataSource dataSource : dataSources) {
+                        Log.i(TAG, String.format("Data source found: %s", dataSource.toString()));
+                        Log.i(TAG, String.format("Data source type: %s", dataSource.getDataType().getName()));
+                        // Let's register a listener to receive Activity data!
+                        if (dataSource.getDataType() == DataType.TYPE_STEP_COUNT_CUMULATIVE && dataPointListener == null) {
+                            Log.i(TAG, "Data source for LOCATION_SAMPLE found!  Registering.");
+                            registerFitnessDataListener(dataSource, DataType.TYPE_STEP_COUNT_CUMULATIVE);
+                        }
+                    }
+                })
+                .addOnFailureListener((e) -> Log.e(TAG, "failed", e));
+    }
+
+    private void registerFitnessDataListener(DataSource dataSource, DataType dataType) {
+        dataPointListener = (@NonNull DataPoint dataPoint) -> {
+            for (Field field : dataPoint.getDataType().getFields()) {
+                Value value = dataPoint.getValue(field);
+                Log.i(TAG, String.format("Detected DataPoint field: %s", field.getName()));
+                Log.i(TAG, String.format("Detected DataPoint value: %s", value.toString()));
+
+            }
+        };
+        Fitness.getSensorsClient(mainActivity, getGoogleAccount())
+                .add(
+                        new SensorRequest.Builder()
+                                .setDataSource(dataSource) // Optional but recommended for custom data sets.
+                                .setDataType(dataType) // Can't be omitted.
+                                .setSamplingRate(1, TimeUnit.SECONDS)
+                                .build(),
+                        dataPointListener)
+                .addOnCompleteListener((task) -> {
+                    if (task.isSuccessful()) {
+                        Log.i(TAG, "Listener registered!");
+                    } else {
+                        Log.e(TAG, "Listener not registered.", task.getException());
+                    }
+                });
+    }
+
+    /** Unregisters the listener with the Sensors API.  */
+    private void unregisterFitnessDataListener() {
+        if (dataPointListener == null) {
+            // This code only activates one listener at a time.  If there's no listener, there's
+            // nothing to unregister.
+            return;
+        }
+
+        // Waiting isn't actually necessary as the unregister call will complete regardless,
+        // even if called from within onStop, but a callback can still be added in order to
+        // inspect the results.
+        Fitness.getSensorsClient(mainActivity, getGoogleAccount())
+                .remove(dataPointListener)
+                .addOnCompleteListener((task) -> {
+                    if (task.isSuccessful() && task.getResult()) {
+                        Log.i(TAG, "Listener was removed!");
+                    } else {
+                        Log.i(TAG, "Listener was not removed.");
+                    }
                 });
     }
 
@@ -317,5 +414,19 @@ public class AndroidFitness extends Extension
         }
 
         return true;
+    }
+
+    /** Initializes a custom log class that outputs both to in-app targets and logcat.  */
+    private void initializeLogging() { // Wraps Android's native log framework.
+        LogWrapper logWrapper = new LogWrapper();
+        // Using Log, front-end to the logging chain, emulates android.util.log method signatures.
+        Log.setLogNode(logWrapper);
+        // Filter strips out everything except the message text.
+        //MessageOnlyLogFilter msgFilter = new MessageOnlyLogFilter();
+        //logWrapper.setNext(msgFilter);
+        // Send logs to Haxe
+        //msgFilter.setNext(new HaxeTraceLogger());
+        logWrapper.setNext(new HaxeTraceLogger());
+        Log.i(TAG, "Ready");
     }
 }

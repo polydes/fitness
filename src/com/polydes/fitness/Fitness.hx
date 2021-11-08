@@ -46,6 +46,28 @@ class Fitness
     }
     #end
 
+    #if android
+    static var jniFunctionMap:Map<String, Dynamic> = new Map<String, Dynamic>();
+    #end
+
+    public static function call(functionName:String):Void
+    {
+        #if ios
+        
+        #end
+        
+        #if android
+        var jniFunction = jniFunctionMap.get(functionName);
+        if(jniFunction == null)
+        {
+            jniFunction = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", functionName, "()V", true);
+            jniFunctionMap.set(functionName, jniFunction);
+        }
+        
+        jniFunction();
+        #end
+    }
+
     public static function initialize():Void 
     {
         #if ios
@@ -159,6 +181,14 @@ class Fitness
         funcUpdateSteps([]);
         #end
     }
+
+    ///Android Callbacks
+    #if android
+    public function onTrace(tag:String, msg:String)
+    {
+        trace(tag + ": " + msg);
+    }
+    #end
 
     #if android 
     private static var funcInit:Dynamic;
