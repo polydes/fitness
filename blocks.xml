@@ -1,4 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <palette>
     
+    <block
+		tag="fitness-init"
+		spec="init fitness"
+		code='com.polydes.fitness.Fitness.initialize();'
+		type="action"
+		color="gray"
+		returns="void">
+		<fields/>
+	</block>
+
+	<block
+		tag="fitness-request-permissions"
+		spec="request fitness permissions"
+		code='com.polydes.fitness.Fitness.call("requestPermissions");'
+		type="action"
+		color="gray"
+		returns="void">
+		<fields/>
+	</block>
+
+	<block
+		tag="fitness-rescind-permissions"
+		spec="rescind fitness permissions"
+		code='com.polydes.fitness.Fitness.call("rescindPermissions");'
+		type="action"
+		color="gray"
+		returns="void">
+		<fields/>
+	</block>
+
+	<block
+		tag="fitness-start-steps-sensor"
+		spec="start sensing steps"
+		code='com.polydes.fitness.Fitness.call("findDataSources");'
+		type="action"
+		color="gray"
+		returns="void">
+		<fields/>
+	</block>
+
+	<block
+		tag="fitness-start-steps-subscription"
+		spec="start subscribing to steps"
+		code='com.polydes.fitness.Fitness.call("recordSteps");'
+		type="action"
+		color="gray"
+		returns="void">
+		<fields/>
+	</block>
+
+	<block
+		tag="fitness-check-permissions"
+		spec="fitness permissions are approved"
+		code='com.polydes.fitness.Fitness.get("allPermissionsApproved")'
+		type="normal"
+		color="gray"
+		returns="boolean">
+		<fields/>
+	</block>
+
+	<block
+		tag="fitness-update-steps-history"
+		spec="update historical step count"
+		code='com.polydes.fitness.Fitness.call("updateSteps");'
+		type="action"
+		color="gray"
+		returns="void">
+		<fields/>
+	</block>
+
+	<block
+		tag="fitness-history-step-count"
+		spec="historical step count"
+		code='com.polydes.fitness.Fitness.historyStepCount'
+		type="normal"
+		color="gray"
+		returns="int">
+		<fields/>
+	</block>
+
+	<block
+		tag="fitness-sensor-step-count"
+		spec="sensor step count"
+		code='com.polydes.fitness.Fitness.stepDeltaAccumulator'
+		type="normal"
+		color="gray"
+		returns="int">
+		<fields/>
+	</block>
+
 </palette>

@@ -24,24 +24,14 @@ import haxe.Json;
 #end
 class Fitness
 {
-
     //lastDayChecked
     //stepCountOnLastDayChecked
 
     //stepsTotal
-    //using an int here gives us roughly 300 years of 18k steps/day
-    //2,147,483,647 (2^31 - 1) is the max value of an int
-
-    //16,777,217 (2^24 + 1) is the first integer an ieee754 32-bit float can't represent.
-    //since stencyl uses floats, stepsUsed (as a user attribute) can only accurately increase up to 16,777,217, which would give us about 2.5 years of 18k steps/day.
-    //4.5 years at 10k steps/day
-
     //stepsUsed
 
     //get steps taken since last check
-
     //set step sensor rate in seconds
-
     //read historical step count --> added to steps
 
     public static var historyStepCount:Int;
