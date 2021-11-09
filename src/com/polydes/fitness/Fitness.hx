@@ -24,19 +24,8 @@ import haxe.Json;
 #end
 class Fitness
 {
-    //lastDayChecked
-    //stepCountOnLastDayChecked
-
-    //stepsTotal
-    //stepsUsed
-
-    //get steps taken since last check
-    //set step sensor rate in seconds
-    //read historical step count --> added to steps
-
-    public static var historyStepCount:Int;
-    public static var stepDeltaAccumulator:Int;
-
+    public static var isInitialized:Boolean;
+    
     #if android
     //Used for Android callbacks from Java
     public function new()
@@ -87,6 +76,11 @@ class Fitness
 
     public static function initialize():Void 
     {
+        if(isInitialized)
+        {
+            return;
+        }
+
         #if ios
         
         #end    
@@ -100,6 +94,7 @@ class Fitness
         var args = new Array<Dynamic>();
         args.push(new Fitness());
         funcInit(args);
+        isInitialized = true;
         #end
     }
 
@@ -108,16 +103,6 @@ class Fitness
     public function onTrace(tag:String, msg:String)
     {
         trace(tag + ": " + msg);
-    }
-
-    public function historyUpdated(steps:Int)
-    {
-        historyStepCount = steps;
-    }
-
-    public function deltaUpdated(steps:Int)
-    {
-        stepDeltaAccumulator += steps;
     }
     #end
 

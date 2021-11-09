@@ -32,23 +32,32 @@
 	</block>
 
 	<block
-		tag="fitness-start-steps-sensor"
-		spec="start sensing steps"
-		code='com.polydes.fitness.Fitness.call("findDataSources");'
+		tag="fitness-subscribe-to-step-recording"
+		spec="start recording steps in background"
+		code='com.polydes.fitness.Fitness.call("trySubscribeToStepRecording");'
 		type="action"
 		color="gray"
 		returns="void">
 		<fields/>
 	</block>
 
+	<block tag="fitness-steps" spec="steps" code="steps" type="normal" color="blue" returns="int" hidden="true">
+		<fields/>
+	</block>
+
 	<block
-		tag="fitness-start-steps-subscription"
-		spec="start subscribing to steps"
-		code='com.polydes.fitness.Fitness.call("recordSteps");'
-		type="action"
+		tag="fitness-read-step-history-data"
+		spec="read step history from %2 until %3 -- %1"
+		code='com.polydes.fitness.Fitness.call("tryReadStepHistoryData", "(JJLorg/haxe/lime/HaxeObject;)V", [#2, #3, {"callback": new function(steps:Int) { #0 }}]);'
+		type="wrapper"
 		color="gray"
 		returns="void">
-		<fields/>
+		<fields>
+			<code-block order="0"/>
+			<attached-block order="1" tag="fitness-steps"/>
+			<int order="2"/>
+			<int order="3"/>
+		</fields>
 	</block>
 
 	<block
@@ -62,9 +71,23 @@
 	</block>
 
 	<block
-		tag="fitness-update-steps-history"
-		spec="update historical step count"
-		code='com.polydes.fitness.Fitness.call("updateSteps");'
+		tag="fitness-register-step-sensor-listener"
+		spec="start listening to live step sensor every %2 seconds -- %1"
+		code='com.polydes.fitness.Fitness.call("tryRegisterStepSensorListener", "(ZLorg/haxe/lime/HaxeObject;)V", [#2, {"callback": new function(steps:Int) { #0 }}]);'
+		type="wrapper"
+		color="gray"
+		returns="void">
+		<fields>
+			<code-block order="0"/>
+			<attached-block order="1" tag="fitness-steps"/>
+			<int order="2"/>
+		</fields>
+	</block>
+
+	<block
+		tag="fitness-unregister-step-sensor-listener"
+		spec="stop listening to live step sensor"
+		code='com.polydes.fitness.Fitness.call("tryUnregisterStepSensorListener")'
 		type="action"
 		color="gray"
 		returns="void">
@@ -72,19 +95,9 @@
 	</block>
 
 	<block
-		tag="fitness-history-step-count"
-		spec="historical step count"
-		code='com.polydes.fitness.Fitness.historyStepCount'
-		type="normal"
-		color="gray"
-		returns="int">
-		<fields/>
-	</block>
-
-	<block
-		tag="fitness-sensor-step-count"
-		spec="sensor step count"
-		code='com.polydes.fitness.Fitness.stepDeltaAccumulator'
+		tag="fitness-current-time"
+		spec="current time"
+		code='com.polydes.fitness.Fitness.get("currentTime")'
 		type="normal"
 		color="gray"
 		returns="int">
