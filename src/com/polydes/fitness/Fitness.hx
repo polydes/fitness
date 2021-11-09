@@ -24,7 +24,7 @@ import haxe.Json;
 #end
 class Fitness
 {
-    public static var isInitialized:Boolean;
+    public static var isInitialized:Bool;
     
     #if android
     //Used for Android callbacks from Java
@@ -98,6 +98,95 @@ class Fitness
         #end
     }
 
+    #if android
+    public static function trySubscribeToStepRecording():Void
+    {
+        if(func_trySubscribeToStepRecording == null)
+        {
+            func_trySubscribeToStepRecording = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "trySubscribeToStepRecording", "()V", true);
+        }
+        
+        func_trySubscribeToStepRecording();
+    }
+
+    public static function tryReadStepHistoryData(startTimeSeconds:Int, endTimeSeconds:Int, callback:(Int)->Void):Void
+    {
+        if(func_tryReadStepHistoryData == null)
+        {
+            func_tryReadStepHistoryData = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "tryReadStepHistoryData", "(IILorg/haxe/lime/HaxeObject;)V", true);
+        }
+
+        var stepsTakenCallback = new FitnessStepCallback();
+        stepsTakenCallback.stepsTaken = callback;
+
+        func_tryReadStepHistoryData(([startTimeSeconds, endTimeSeconds, stepsTakenCallback]:Array<Dynamic>));
+    }
+
+    public static function tryRegisterStepSensorListener(samplingRate:Int, callback:(Int)->Void):Void
+    {
+        if(func_tryRegisterStepSensorListener == null)
+        {
+            func_tryRegisterStepSensorListener = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "tryRegisterStepSensorListener", "(ILorg/haxe/lime/HaxeObject;)V", true);
+        }
+
+        var stepsTakenCallback = new FitnessStepCallback();
+        stepsTakenCallback.stepsTaken = callback;
+        
+        func_tryRegisterStepSensorListener(([samplingRate, stepsTakenCallback]:Array<Dynamic>));
+    }
+
+    public static function tryUnregisterStepSensorListener():Void
+    {
+        if(func_tryUnregisterStepSensorListener == null)
+        {
+            func_tryUnregisterStepSensorListener = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "tryUnregisterStepSensorListener", "()V", true);
+        }
+        
+        func_tryUnregisterStepSensorListener();
+    }
+
+    public static function allPermissionsApproved():Bool
+    {
+        if(func_allPermissionsApproved == null)
+        {
+            func_allPermissionsApproved = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "allPermissionsApproved", "()Z", true);
+        }
+        
+        return func_allPermissionsApproved();
+    }
+
+    public static function requestPermissions():Void
+    {
+        if(func_requestPermissions == null)
+        {
+            func_requestPermissions = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "requestPermissions", "()V", true);
+        }
+        
+        func_requestPermissions();
+    }
+
+    public static function rescindPermissions():Void
+    {
+        if(func_rescindPermissions == null)
+        {
+            func_rescindPermissions = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "rescindPermissions", "()V", true);
+        }
+        
+        func_rescindPermissions();
+    }
+
+    public static function currentTime():Int
+    {
+        if(func_currentTime == null)
+        {
+            func_currentTime = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "currentTime", "()I", true);
+        }
+        
+        return func_currentTime();
+    }
+
+    #end
+
     ///Android Callbacks
     #if android
     public function onTrace(tag:String, msg:String)
@@ -108,8 +197,24 @@ class Fitness
 
     #if android 
     private static var funcInit:Dynamic;
+    private static var func_trySubscribeToStepRecording:Dynamic;
+    private static var func_tryReadStepHistoryData:Dynamic;
+    private static var func_tryRegisterStepSensorListener:Dynamic;
+    private static var func_tryUnregisterStepSensorListener:Dynamic;
+    private static var func_allPermissionsApproved:Dynamic;
+    private static var func_requestPermissions:Dynamic;
+    private static var func_rescindPermissions:Dynamic;
+    private static var func_currentTime:Dynamic;
     #end
 
     #if ios
     #end
 }
+
+#if android
+class FitnessStepCallback
+{
+    public function new() {}
+    public dynamic function stepsTaken(steps:Int) {}
+}
+#end

@@ -107,21 +107,22 @@ public class AndroidFitness extends Extension
     //Read history data
 
     @SuppressWarnings("unused")
-    public static void tryReadStepHistoryData(long startTimeMillis, long endTimeMillis, HaxeObject callback) {
+    public static void tryReadStepHistoryData(int startTimeSeconds, int endTimeSeconds, HaxeObject callback) {
 
         instance.checkPermissionsAndRun(() -> {
             Fitness.getHistoryClient(mainActivity, instance.getGoogleAccount())
                     .readData(new DataReadRequest.Builder()
                             .read(DataType.TYPE_STEP_COUNT_DELTA)
-                            .setTimeRange(startTimeMillis, endTimeMillis, TimeUnit.MILLISECONDS)
+                            .setTimeRange(startTimeSeconds, endTimeSeconds, TimeUnit.SECONDS)
                             .build())
                     .addOnSuccessListener((dataReadResponse) -> {
                         long stepsTaken = 0L;
                         for(DataSet dataSet : dataReadResponse.getDataSets())
                             if(!dataSet.isEmpty())
                                 stepsTaken += dataSet.getDataPoints().get(0).getValue(Field.FIELD_STEPS).asInt();
-
-                        Extension.callbackHandler.post (() -> callback.call ("callback", new Object[] {stepsTaken}));
+                        final long stepsTakenResult = stepsTaken;
+                        
+                        Extension.callbackHandler.post (() -> callback.call ("stepsTaken", new Object[] {stepsTakenResult}));
                         Log.i(TAG, "Total steps taken over queried history: " + stepsTaken);
                     })
                     .addOnFailureListener(e -> {
@@ -135,6 +136,8 @@ public class AndroidFitness extends Extension
 
     @SuppressWarnings("unused")
     public static void tryRegisterStepSensorListener(int samplingRate, HaxeObject callback) {
+
+        Log.i(TAG, "Called tryRegisterStepSensorListener");
 
         instance.checkPermissionsAndRun(() -> {
 
@@ -179,7 +182,7 @@ public class AndroidFitness extends Extension
                 Log.i(TAG, String.format("Detected DataPoint value: %s", value.toString()));
                 if(field.getName().equals("steps"))
                 {
-                    Extension.callbackHandler.post (() -> callback.call ("callback", new Object[] {value.asInt()}));
+                    Extension.callbackHandler.post (() -> callback.call ("stepsTaken", new Object[] {value.asInt()}));
                 }
             }
         };
@@ -247,8 +250,8 @@ public class AndroidFitness extends Extension
     }
 
     @SuppressWarnings("unused")
-    public static long currentTime() {
-        return System.currentTimeMillis();
+    public static int currentTime() {
+        return (int) (System.currentTimeMillis() / 1000L);
     }
 
     public void checkPermissionsAndRun(FitAction action) {

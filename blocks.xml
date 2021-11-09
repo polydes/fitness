@@ -14,7 +14,7 @@
 	<block
 		tag="fitness-request-permissions"
 		spec="request fitness permissions"
-		code='com.polydes.fitness.Fitness.call("requestPermissions");'
+		code='com.polydes.fitness.Fitness.requestPermissions();'
 		type="action"
 		color="gray"
 		returns="void">
@@ -24,7 +24,7 @@
 	<block
 		tag="fitness-rescind-permissions"
 		spec="rescind fitness permissions"
-		code='com.polydes.fitness.Fitness.call("rescindPermissions");'
+		code='com.polydes.fitness.Fitness.rescindPermissions();'
 		type="action"
 		color="gray"
 		returns="void">
@@ -34,7 +34,7 @@
 	<block
 		tag="fitness-subscribe-to-step-recording"
 		spec="start recording steps in background"
-		code='com.polydes.fitness.Fitness.call("trySubscribeToStepRecording");'
+		code='com.polydes.fitness.Fitness.trySubscribeToStepRecording();'
 		type="action"
 		color="gray"
 		returns="void">
@@ -48,7 +48,7 @@
 	<block
 		tag="fitness-read-step-history-data"
 		spec="read step history from %2 until %3 -- %1"
-		code='com.polydes.fitness.Fitness.call("tryReadStepHistoryData", "(JJLorg/haxe/lime/HaxeObject;)V", [#2, #3, {"callback": new function(steps:Int) { #0 }}]);'
+		code='com.polydes.fitness.Fitness.tryReadStepHistoryData(#2, #3, function(steps:Int) { #0 });'
 		type="wrapper"
 		color="gray"
 		returns="void">
@@ -63,7 +63,7 @@
 	<block
 		tag="fitness-check-permissions"
 		spec="fitness permissions are approved"
-		code='com.polydes.fitness.Fitness.get("allPermissionsApproved")'
+		code='com.polydes.fitness.Fitness.allPermissionsApproved()'
 		type="normal"
 		color="gray"
 		returns="boolean">
@@ -73,7 +73,7 @@
 	<block
 		tag="fitness-register-step-sensor-listener"
 		spec="start listening to live step sensor every %2 seconds -- %1"
-		code='com.polydes.fitness.Fitness.call("tryRegisterStepSensorListener", "(ZLorg/haxe/lime/HaxeObject;)V", [#2, {"callback": new function(steps:Int) { #0 }}]);'
+		code='com.polydes.fitness.Fitness.tryRegisterStepSensorListener(#2, function(steps:Int) { #0 });'
 		type="wrapper"
 		color="gray"
 		returns="void">
@@ -87,7 +87,7 @@
 	<block
 		tag="fitness-unregister-step-sensor-listener"
 		spec="stop listening to live step sensor"
-		code='com.polydes.fitness.Fitness.call("tryUnregisterStepSensorListener")'
+		code='com.polydes.fitness.Fitness.tryUnregisterStepSensorListener();'
 		type="action"
 		color="gray"
 		returns="void">
@@ -97,7 +97,7 @@
 	<block
 		tag="fitness-current-time"
 		spec="current time"
-		code='com.polydes.fitness.Fitness.get("currentTime")'
+		code='com.polydes.fitness.Fitness.currentTime()'
 		type="normal"
 		color="gray"
 		returns="int">
