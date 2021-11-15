@@ -58,6 +58,11 @@ public class AndroidFitness extends Extension
             fitActionRequests.remove(requestID);
             action.performAction();
         }
+
+        void cancel()
+        {
+            fitActionRequests.remove(requestID);
+        }
     }
 
     private interface FitAction
@@ -295,8 +300,9 @@ public class AndroidFitness extends Extension
         {
             action.performAction();
         }
-        else
+        else if(!currentlyAuthenticating)
         {
+            currentlyAuthenticating = true;
             GoogleSignIn.requestPermissions(
                     mainActivity,
                     action.requestID,
@@ -304,11 +310,14 @@ public class AndroidFitness extends Extension
         }
     }
 
+    boolean currentlyAuthenticating = false;
+
     /**
      * Handles the callback from the OAuth sign in flow, executing the post sign in function
      */
     @Override
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+        currentlyAuthenticating = false;
         FitAuthenticatedAction postSignInAction = fitActionRequests.get(requestCode);
         if(postSignInAction == null) {
             Log.e(TAG, "Unknown request code: " + requestCode);
@@ -316,8 +325,13 @@ public class AndroidFitness extends Extension
             if(resultCode == RESULT_OK) {
                 postSignInAction.performAction();
             } else {
+                postSignInAction.cancel();
                 oAuthErrorMsg(requestCode, resultCode);
             }
+        }
+
+        if(fitActionRequests.size() != 0) {
+            fitSignIn(fitActionRequests.get(fitActionRequests.keyAt(0)));
         }
 
         return true;
