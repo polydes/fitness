@@ -50,6 +50,7 @@ public class AndroidFitness extends Extension
         {
             this.requestID = nextRequestID++;
             this.action = action;
+            fitActionRequests.put(requestID, this);
         }
 
         void performAction()
@@ -308,14 +309,17 @@ public class AndroidFitness extends Extension
      */
     @Override
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_OK) {
-            FitAuthenticatedAction postSignInAction = fitActionRequests.get(requestCode);
-            postSignInAction.performAction();
+        FitAuthenticatedAction postSignInAction = fitActionRequests.get(requestCode);
+        if(postSignInAction == null) {
+            Log.e(TAG, "Unknown request code: " + requestCode);
+        } else {
+            if(resultCode == RESULT_OK) {
+                postSignInAction.performAction();
+            } else {
+                oAuthErrorMsg(requestCode, resultCode);
+            }
         }
-        else
-        {
-            oAuthErrorMsg(requestCode, resultCode);
-        }
+
         return true;
     }
 
