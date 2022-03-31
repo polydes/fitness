@@ -3,5 +3,5 @@ name=Fitness
 description=Access health and fitness data
 author=Justin
 website=http://www.stencyl.com
-version=0.1.0
+version=0.2.0
 compatibility=mobile
