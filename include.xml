@@ -2,6 +2,7 @@
 <project>
 	
 	<section if="android">
+		<set name="FITNESS_BOOT_STEP_SUBSCRIBE" if="${subscribeToStepsUponBoot}" />
 		<source path="src" />
 		<dependency name="fitness" path="dependencies/fitness" />
 		<android extension="com.polydes.fitness.AndroidFitness" />

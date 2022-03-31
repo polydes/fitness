@@ -3,6 +3,7 @@
 
 	<include>
 		<field name="oauth2ClientID" type="text" />
+		<field name="subscribeToStepsUponBoot" type="boolean" />
 	</include>
 
 </game-data>

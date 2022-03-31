@@ -4,6 +4,7 @@
 	<property-page-addon target="dashboard.sidebar">
 		<header label="Android"/>
 		<field name="oauth2ClientID" label="OAuth 2.0 Client ID" />
+		<field name="subscribeToStepsUponBoot" label="Subscribe to steps upon boot" hint="Upon device startup, if the user is logged in to their google account and all necessary permissions have been granted, step data is automatically subscribed to. No prompts are shown." />
 	</property-page-addon>
 
 </stencyl-addons>
