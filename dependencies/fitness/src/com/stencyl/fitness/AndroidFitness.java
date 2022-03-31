@@ -156,7 +156,7 @@ public class AndroidFitness extends Extension
             Fitness.getSensorsClient(mainActivity, instance.getGoogleAccount())
                     .findDataSources(new DataSourcesRequest.Builder()
                             .setDataTypes(DataType.TYPE_STEP_COUNT_DELTA)
-                            //.setDataSourceTypes(DataSource.TYPE_RAW)
+                            .setDataSourceTypes(DataSource.TYPE_DERIVED)
                             .build())
                     .addOnSuccessListener((dataSources) -> {
                         for (DataSource dataSource : dataSources) {
