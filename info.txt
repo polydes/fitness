@@ -1,4 +1,4 @@
-id=com.stencyl.fitness
+id=com.polydes.fitness
 name=Fitness
 description=Access health and fitness data
 author=Justin

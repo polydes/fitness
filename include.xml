@@ -4,7 +4,7 @@
 	<section if="android">
 		<source path="src" />
 		<dependency name="fitness" path="dependencies/fitness" />
-		<android extension="com.stencyl.fitness.AndroidFitness" />
+		<android extension="com.polydes.fitness.AndroidFitness" />
 	</section>
 	
 </project>

@@ -1,4 +1,4 @@
-package com.stencyl.fitness;
+package com.polydes.fitness;
 
 import static android.app.Activity.RESULT_OK;
 

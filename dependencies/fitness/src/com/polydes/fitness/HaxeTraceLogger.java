@@ -1,4 +1,4 @@
-package com.stencyl.fitness;
+package com.polydes.fitness;
 
 import android.util.Log;
 

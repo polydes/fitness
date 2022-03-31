@@ -48,7 +48,7 @@ class Fitness
         var jniFunction = jniFunctionMap.get(functionName);
         if(jniFunction == null)
         {
-            jniFunction = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", functionName, type, true);
+            jniFunction = JNI.createStaticMethod("com/polydes/fitness/AndroidFitness", functionName, type, true);
             jniFunctionMap.set(functionName, jniFunction);
         }
 
@@ -66,7 +66,7 @@ class Fitness
         var jniFunction = jniFunctionMap.get(functionName);
         if(jniFunction == null)
         {
-            jniFunction = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", functionName, type, true);
+            jniFunction = JNI.createStaticMethod("com/polydes/fitness/AndroidFitness", functionName, type, true);
             jniFunctionMap.set(functionName, jniFunction);
         }
         
@@ -88,7 +88,7 @@ class Fitness
         #if android
         if(funcInit == null)
         {
-            funcInit = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "initialize", "(Lorg/haxe/lime/HaxeObject;)V", true);
+            funcInit = JNI.createStaticMethod("com/polydes/fitness/AndroidFitness", "initialize", "(Lorg/haxe/lime/HaxeObject;)V", true);
         }
         
         var args = new Array<Dynamic>();
@@ -103,7 +103,7 @@ class Fitness
     {
         if(func_trySubscribeToStepRecording == null)
         {
-            func_trySubscribeToStepRecording = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "trySubscribeToStepRecording", "()V", true);
+            func_trySubscribeToStepRecording = JNI.createStaticMethod("com/polydes/fitness/AndroidFitness", "trySubscribeToStepRecording", "()V", true);
         }
         
         func_trySubscribeToStepRecording();
@@ -113,7 +113,7 @@ class Fitness
     {
         if(func_tryReadStepHistoryData == null)
         {
-            func_tryReadStepHistoryData = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "tryReadStepHistoryData", "(IILorg/haxe/lime/HaxeObject;)V", true);
+            func_tryReadStepHistoryData = JNI.createStaticMethod("com/polydes/fitness/AndroidFitness", "tryReadStepHistoryData", "(IILorg/haxe/lime/HaxeObject;)V", true);
         }
 
         var stepsTakenCallback = new FitnessStepCallback();
@@ -126,7 +126,7 @@ class Fitness
     {
         if(func_tryRegisterStepSensorListener == null)
         {
-            func_tryRegisterStepSensorListener = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "tryRegisterStepSensorListener", "(ILorg/haxe/lime/HaxeObject;)V", true);
+            func_tryRegisterStepSensorListener = JNI.createStaticMethod("com/polydes/fitness/AndroidFitness", "tryRegisterStepSensorListener", "(ILorg/haxe/lime/HaxeObject;)V", true);
         }
 
         var stepsTakenCallback = new FitnessStepCallback();
@@ -139,7 +139,7 @@ class Fitness
     {
         if(func_tryUnregisterStepSensorListener == null)
         {
-            func_tryUnregisterStepSensorListener = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "tryUnregisterStepSensorListener", "()V", true);
+            func_tryUnregisterStepSensorListener = JNI.createStaticMethod("com/polydes/fitness/AndroidFitness", "tryUnregisterStepSensorListener", "()V", true);
         }
         
         func_tryUnregisterStepSensorListener();
@@ -149,7 +149,7 @@ class Fitness
     {
         if(func_allPermissionsApproved == null)
         {
-            func_allPermissionsApproved = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "allPermissionsApproved", "()Z", true);
+            func_allPermissionsApproved = JNI.createStaticMethod("com/polydes/fitness/AndroidFitness", "allPermissionsApproved", "()Z", true);
         }
         
         return func_allPermissionsApproved();
@@ -159,7 +159,7 @@ class Fitness
     {
         if(func_requestPermissions == null)
         {
-            func_requestPermissions = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "requestPermissions", "()V", true);
+            func_requestPermissions = JNI.createStaticMethod("com/polydes/fitness/AndroidFitness", "requestPermissions", "()V", true);
         }
         
         func_requestPermissions();
@@ -169,7 +169,7 @@ class Fitness
     {
         if(func_rescindPermissions == null)
         {
-            func_rescindPermissions = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "rescindPermissions", "()V", true);
+            func_rescindPermissions = JNI.createStaticMethod("com/polydes/fitness/AndroidFitness", "rescindPermissions", "()V", true);
         }
         
         func_rescindPermissions();
@@ -179,7 +179,7 @@ class Fitness
     {
         if(func_currentTime == null)
         {
-            func_currentTime = JNI.createStaticMethod("com/stencyl/fitness/AndroidFitness", "currentTime", "()I", true);
+            func_currentTime = JNI.createStaticMethod("com/polydes/fitness/AndroidFitness", "currentTime", "()I", true);
         }
         
         return func_currentTime();
