@@ -9,7 +9,8 @@
 
 	<application>
         <receiver
-            android:name=".BootBroadcastReceiver">
+            android:name=".BootBroadcastReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
