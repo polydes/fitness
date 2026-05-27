@@ -1,0 +1,19 @@
+{
+  "group": "com.polydes",
+  "id": "com.polydes.fitness",
+  "name": "Fitness",
+  "description": "Access health and fitness data",
+  "tags": ["system"],
+  "type": "game",
+  "author": "Justin Espedal",
+  "website": "https://www.polydes.com/repo/engine/com.polydes.fitness",
+  "repository": "https://www.polydes.com/repo",
+  "target": "stencyl-4.2.0",
+  "version": "0.3.0",
+
+  "icon": "icon.png",
+
+  "engine": {
+    "compatibility": "mobile"
+  }
+}
