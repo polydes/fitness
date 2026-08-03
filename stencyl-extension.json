@@ -6,7 +6,7 @@
   "tags": ["system"],
   "type": "game",
   "author": "Justin Espedal",
-  "website": "https://www.polydes.com/repo/engine/com.polydes.fitness",
+  "website": "https://www.polydes.com/repo/extensions/com.polydes.fitness",
   "repository": "https://www.polydes.com/repo",
   "target": "stencyl-4.2.0",
   "version": "0.3.0",
